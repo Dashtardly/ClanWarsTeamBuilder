@@ -50,10 +50,14 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Fakes\ApiQueryFake.cs" />
+    <Compile Include="Fakes\ApiWebClientFake.cs" />
+    <Compile Include="Tests\ApiQueryTests.cs" />
     <Compile Include="Tests\TanksInfoTests.cs" />
     <Compile Include="Tests\PlayerInfoTests.cs" />
     <Compile Include="Tests\ClanInfoTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\TestHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Data\WG_ClanInfo.json" />

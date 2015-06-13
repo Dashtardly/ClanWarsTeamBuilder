@@ -41,10 +41,15 @@ using WoT.Contributed.TeamBuilder.Data;
 namespace TeamBuilder.Data.Tests
 {
     [TestClass]
-    public class ClanInfoTests
+    public class ApiQueryTests
     {
 
 #region Data
+
+        /// <summary>The assigned ID number for a registered WarGaming application.</summary>
+        private const string APPLICATION_ID = "f539b9afae7d020157951f19cecf36ec";
+
+        private const string CLAN_F3_ID = "1000007884";
 
         /// <summary>Sample API call response for information about a (specific) clan.</summary>
         private const string SAMPLE_CLAN_DATA = "WG_ClanInfo.json";
@@ -59,41 +64,28 @@ namespace TeamBuilder.Data.Tests
 
 #region Test Methods
 
-    #region SampleDataFilePresent
+    #region GetClanInfo
         [TestMethod]
         [DeploymentItem( SAMPLE_DATA_FILE_PATH )]
-        public void SampleDataFilePresent()
-        {
-            //Setup
-            string cwd = System.Environment.CurrentDirectory;
-            string dataFilePath = Path.Combine( cwd, SAMPLE_CLAN_DATA );
-
-            //Test
-            bool exists = File.Exists( dataFilePath );
-
-            //Validate
-            Assert.IsTrue( exists, "Setup error. Check that file deployment is setup." );
-        }
-    #endregion SampleDataFilePresent
-
-    #region LoadsJsonData
-        [TestMethod]
-        [DeploymentItem( SAMPLE_DATA_FILE_PATH )]
-        public void LoadsJsonData()
+        public void GetClanInfo()
         {
             //Setup
             int expectedCount = 100;
 
-            string cwd = System.Environment.CurrentDirectory;
-            string dataFilePath = Path.Combine( cwd, SAMPLE_CLAN_DATA );
-            Assert.IsTrue( File.Exists( dataFilePath ), "Setup error. Check that file deployment is setup." );
+            string jsonData = TestHelpers.ReadFromFile( SAMPLE_CLAN_DATA );
 
-            string jsonData = File.ReadAllText( dataFilePath );
+            ApiWebClientFake wcFake = new ApiWebClientFake();
+            wcFake.QueryResponse = jsonData;
+
+            ApiQuery aq = new ApiQuery();
+            aq.WebClient = wcFake;
+
+            string clanData = aq.GetClanInfo( APPLICATION_ID, CLAN_F3_ID );
 
             ClanInfo ci = new ClanInfo();
 
             //Test
-            bool result = ci.Load( jsonData );
+            bool result = ci.Load( clanData );
 
             //Validate
             if( null != ci.TrappedError )
@@ -104,7 +96,39 @@ namespace TeamBuilder.Data.Tests
             int actualCount = ci.Members.Count;
             Assert.IsTrue( ( expectedCount == actualCount ), string.Format( "Count mismatch. Expected {0} but have {1} members.", expectedCount, actualCount ) );
         }
-    #endregion LoadsJsonData
+    #endregion GetClanInfo
+
+    #region GetClanInfoLive
+        [TestMethod]
+        public void GetClanInfoLive()
+        {
+            //Setup
+            ApiQuery aq = new ApiQuery();
+            aq.WebClient = new ApiWebClient();
+
+            string clanData = aq.GetClanInfo( APPLICATION_ID, CLAN_F3_ID );
+            TestHelpers.WriteToFile( clanData );
+
+            ClanInfo ci = new ClanInfo();
+
+            //Test
+            bool result = ci.Load( clanData );
+
+            //Validate
+            if( null != ci.TrappedError )
+            {
+                Console.WriteLine( ci.TrappedError.ToString() );
+            }
+            Assert.IsTrue( result, "Failed to load the test data file content." );
+            int actualCount = ci.Members.Count;
+            Console.WriteLine( "Query returned member count: " + actualCount );
+            foreach( ClanMemberInfo cmi in ci.Members )
+            {
+                Console.WriteLine( "{0} is {1} who is a {2}", cmi.AccountID, cmi.Name, cmi.Role );
+                Assert.IsNull( cmi.Tanks, "Tanks property has been set without a query." );
+            }     
+        }
+    #endregion GetClanInfoLive
 
 #endregion Test Methods
 
