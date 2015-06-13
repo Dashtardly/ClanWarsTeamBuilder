@@ -41,46 +41,64 @@ using WoT.Contributed.TeamBuilder.Data;
 
 namespace TeamBuilder.Data.Tests
 {
-    public class ApiWebClientFake : IApiWebClient
+    internal class ApiWebClientFake : IApiWebClient
     {
 
-        //private Dictionary< string, object > ResponseToQuery = new Dictionary<string, object>();
+        /// <summary>Internal store of registered queries and the response to provide.</summary>
+        private Dictionary< string, object > ResponseToQuery = new Dictionary<string, object>();
 
-        public string QueryResponse { get; set; }
+    #region Properties
 
-        public Exception QueryException { get; set; }
+        internal string QueryResponse { get; set; }
+
+        internal Exception QueryException { get; set; }
+
+    #endregion Properties
 
 #region Public Interface
 
         public string DownloadString( string query )
         {
+            if( ResponseToQuery.Keys.Contains<string>( query ) )
+            {
+                object response = ResponseToQuery[ query ];
+                if( response is Exception )
+                {
+                    throw response as Exception;
+                }
+                return response as string;
+            }
             if( null != QueryException )
             {
                 throw QueryException;
             }
             return QueryResponse;
-
-            //object response = ResponseToQuery[ query ];
-            //if( response is Exception )
-            //{
-            //    throw response as Exception;
-            //}
-            //return response as string;
         }
 
 #endregion Public Interface
 
-        //internal void RegisterResponse( string query, object response )
-        //{
-        //    if( !ResponseToQuery.Keys.Contains<string>( query ) )
-        //    {
-        //        ResponseToQuery.Add( query, response );
-        //    }
-        //    else
-        //    {
-        //        ResponseToQuery[ query ] = response;
-        //    }
-        //}
+#region Internal Methods
+
+    #region RegisterResponse
+        ///====================================================================
+        /// <summary>Registers what the reponse will be for the specified <paramref name="query"/>.</summary>
+        /// <param name="query">The query to use.</param>
+        /// <param name="response">The desired response (either text content or an exception).</param>
+        ///====================================================================
+        internal void RegisterResponse( string query, object response )
+        {
+            if( !ResponseToQuery.Keys.Contains<string>( query ) )
+            {
+                ResponseToQuery.Add( query, response );
+            }
+            else
+            {
+                ResponseToQuery[ query ] = response;
+            }
+        }
+    #endregion RegisterResponse
+
+#endregion Internal Methods
 
     }
 }

@@ -89,6 +89,7 @@ namespace WoT.Contributed.TeamBuilder.Data
         public Tanks()
         {
             AllTanks = new List<TankInfo>();
+            ClanWarsTanks = new List<TankInfo>();
         }
 
 #endregion Constructors
@@ -126,10 +127,9 @@ namespace WoT.Contributed.TeamBuilder.Data
                 result = IsClanWarsTank( tank );
             }
             TankInfo cwTank = ( result ) ? tank : null;
-            return tank;
+            return cwTank;
         }
     #endregion GetIfClanWarsTank
-
 
     #region IsClanWarsTank( int )
         ///====================================================================
@@ -222,6 +222,10 @@ namespace WoT.Contributed.TeamBuilder.Data
                     {
                         TankInfo tank = new TankInfo( tankData[ key ] );
                         AllTanks.Add( tank );
+                        if( IsClanWarsTank( tank ) )
+                        {
+                            ClanWarsTanks.Add( tank );
+                        }
                     }
                 }
                 catch( Exception ex )
@@ -231,8 +235,8 @@ namespace WoT.Contributed.TeamBuilder.Data
                 result = ( 0 < AllTanks.Count );
             }
             return result;
-        } 
-        #endregion
+        }
+    #endregion Load
 
 #endregion Public Methods
 

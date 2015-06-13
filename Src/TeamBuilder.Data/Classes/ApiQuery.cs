@@ -72,38 +72,106 @@ namespace WoT.Contributed.TeamBuilder.Data
 
 #region Public Methods
 
+    #region GetClanInfo
+        ///====================================================================
+        /// <summary>Makes a query to obtain the information about the clan with <paramref name="clanID"/>.</summary>
+        /// <param name="appID">The (registered) application ID that is making the query.</param>
+        /// <param name="clanID">The ID of the clan whose info is desired.</param>
+        ///====================================================================
         public string GetClanInfo( string appID, string clanID )
         {
-            string query = string.Format( Globals.FORMAT_QUERY_CLAN, appID, Globals.QueryFieldsClan, clanID );
+            string query    = MakeQueryClanInfo( appID, clanID );
             string response = DownloadAndCache( query, ClanCache, clanID );
             return response;
         }
+    #endregion GetClanInfo
+
+    #region GetPerformanceInfo
+        ///====================================================================
+        /// <summary>Makes a query to obtain the information about the player's
+        ///          (identified by their <paramref name="accountID"/>) performance.</summary>
+        /// <param name="appID">The (registered) application ID that is making the query.</param>
+        /// <param name="accountID">The ID of the player whose info is desired.</param>
+        ///====================================================================
+        public string GetPerformanceInfo( string appID, string accountID )
+        {
+            string query    = MakeQueryPerformanceInfo( appID, accountID );
+            string response = DownloadAndCache( query, PerformanceCache, accountID );
+            return response;
+        }
+    #endregion GetPerformanceInfo
+
+    #region GetTanksInfo
+        ///====================================================================
+        /// <summary>Makes a query to obtain all the desired information about the tank in the game.</summary>
+        /// <param name="appID">The (registered) application ID that is making the query.</param>
+        ///====================================================================
+        public string GetTanksInfo( string appID )
+        {
+            string query    = MakeQueryTanksInfo( appID );
+            string response = DownloadAndCache( query, TanksCache, appID );
+            return response;
+        }
+    #endregion GetTanksInfo
 
         public string GetTanksOwned( string appID, string accountID )
         {
-            string query = string.Format( Globals.FORMAT_QUERY_PLAYERTANKS, appID, Globals.QueryFieldsPlayersTanks, accountID );
-            string response = DownloadAndCache( query, PlayerTanksCache, accountID );
-            return response;
-        }
-
-        public string GetTanksInfo( string appID )
-        {
-            string query = string.Format( Globals.FORMAT_QUERY_TANKS, appID, Globals.QueryFieldsTanks );
-            string response = DownloadAndCache( query, PlayerTanksCache, "Tanks" );
-            return response;
-        }
-
-        public string GetPerformanceInfo( string appID, string accountID )
-        {
-            string query = string.Format( Globals.FORMAT_QUERY_PERFORMANCE, appID, Globals.QueryFieldsPerformance, accountID );
-            string response = DownloadAndCache( query, PerformanceCache, accountID );
-            return response;
+            //string query    = MakeQueryTanksOwned( appID, accountID );
+            //string response = DownloadAndCache( query, PlayerTanksCache, accountID );
+            //return response;
+            return string.Empty;
         }
 
         public void LoadCachedData()
         {
             //TODO
         }
+
+    #region MakeQueryClanInfo
+        ///====================================================================
+        /// <summary>Makes the query URL to obtain the information about the clan with <paramref name="clanID"/>.</summary>
+        /// <param name="appID">The (registered) application ID that is making the query.</param>
+        /// <param name="clanID">The ID of the clan whose info is desired.</param>
+        ///====================================================================
+        public static string MakeQueryClanInfo( string appID, string clanID )
+        {
+            string query = string.Format( Globals.FORMAT_QUERY_CLAN, appID, Globals.QueryFieldsClan, clanID );
+            return query;
+        }
+    #endregion MakeQueryClanInfo
+
+        ///====================================================================
+        /// <summary>>Makes the query URL to obtain the information about the player's
+        ///          (identified by their <paramref name="accountID"/>) performance.</summary>
+        /// <param name="appID">The (registered) application ID that is making the query.</param>
+        /// <param name="accountID">The ID of the player whose info is desired.</param>
+        ///====================================================================
+        private static string MakeQueryPerformanceInfo( string appID, string accountID )
+        {
+            string query = string.Format( Globals.FORMAT_QUERY_PERFORMANCE, appID, Globals.QueryFieldsPerformance, accountID );
+            return query;
+        }
+
+
+    #region MakeQueryTanksInfo
+        ///====================================================================
+        /// <summary>Makes the query URL to obtain all the desired information about the tanks in the game.</summary>
+        /// <param name="appID">The (registered) application ID that is making the query.</param>
+        ///====================================================================
+        private static string MakeQueryTanksInfo( string appID )
+        {
+            string query = string.Format( Globals.FORMAT_QUERY_TANKS, appID, Globals.QueryFieldsTanks );
+            return query;
+        }
+    #endregion MakeQueryTanksInfo
+
+        //private static string MakeQueryTanksOwned( string appID, string accountID )
+        //{
+        //    string query = string.Format( Globals.FORMAT_QUERY_PLAYERTANKS, appID, Globals.QueryFieldsPlayersTanks, accountID );
+        //    return query;
+        //}
+
+
 
         public bool SaveCachedData()
         {

@@ -82,28 +82,28 @@ namespace TeamBuilder.Data.Tests
         [DeploymentItem( SAMPLE_DATA_FILE_PATH )]
         public void LoadsJsonData()
         {
-            ////Setup
-            //int expectedCount = 393;
+            //Setup
+            int expectedCount = 396;    //Determined by content in the sample file.
 
-            //string cwd = System.Environment.CurrentDirectory;
-            //string dataFilePath = Path.Combine( cwd, SAMPLE_TANK_DATA );
-            //Assert.IsTrue( File.Exists( dataFilePath ), "Setup error. Check that file deployment is setup." );
+            string cwd = System.Environment.CurrentDirectory;
+            string dataFilePath = Path.Combine( cwd, SAMPLE_TANK_DATA );
+            Assert.IsTrue( File.Exists( dataFilePath ), "Setup error. Check that file deployment is setup." );
 
-            //string jsonData = File.ReadAllText( dataFilePath );
+            string jsonData = File.ReadAllText( dataFilePath );
 
-            //TanksInfo ti = new TanksInfo();
+            Tanks tanks = new Tanks();
 
-            ////Test
-            //bool result = ti.Load( jsonData );
+            //Test
+            bool result = tanks.Load( jsonData );
 
-            ////Validate
-            //if( null != ti.TrappedError )
-            //{
-            //    Console.WriteLine( ti.TrappedError.ToString() );
-            //}
-            //Assert.IsTrue( result, "Failed to load the test data file content." );
-            //int actualCount = ti.Tanks.Count;
-            //Assert.IsTrue( ( expectedCount == actualCount ), string.Format( "Count mismatch. Expected {0} but have {1} members.", expectedCount, actualCount ) );
+            //Validate
+            if( null != tanks.TrappedError )
+            {
+                Console.WriteLine( tanks.TrappedError.ToString() );
+            }
+            Assert.IsTrue( result, "Failed to load the test data file content." );
+            int actualCount = tanks.AllTanks.Count;
+            Assert.IsTrue( ( expectedCount == actualCount ), string.Format( "Count mismatch. Expected {0} but have {1} tanks.", expectedCount, actualCount ) );
         }
     #endregion LoadsJsonData
 
@@ -112,34 +112,34 @@ namespace TeamBuilder.Data.Tests
         [DeploymentItem( SAMPLE_DATA_FILE_PATH )]
         public void GetsClanWarsTanks()
         {
-            ////Setup
-            //int expectedCount = 43;
+            //Setup
+            int expectedCount = 43;
 
-            //string cwd = System.Environment.CurrentDirectory;
-            //string dataFilePath = Path.Combine( cwd, SAMPLE_TANK_DATA );
-            //Assert.IsTrue( File.Exists( dataFilePath ), "Setup error. Check that file deployment is setup." );
+            string cwd = System.Environment.CurrentDirectory;
+            string dataFilePath = Path.Combine( cwd, SAMPLE_TANK_DATA );
+            Assert.IsTrue( File.Exists( dataFilePath ), "Setup error. Check that file deployment is setup." );
 
-            //string jsonData = File.ReadAllText( dataFilePath );
+            string jsonData = File.ReadAllText( dataFilePath );
 
-            //TanksInfo ti = new TanksInfo();
-            //bool result = ti.Load( jsonData );
-            //if( null != ti.TrappedError )
-            //{
-            //    Console.WriteLine( ti.TrappedError.ToString() );
-            //}
-            //Assert.IsTrue( result, "Failed to load the test data file content." );
+            Tanks tanks = new Tanks();
+            bool result = tanks.Load( jsonData );
+            if( null != tanks.TrappedError )
+            {
+                Console.WriteLine( tanks.TrappedError.ToString() );
+            }
+            Assert.IsTrue( result, "Failed to load the test data file content." );
 
-            ////Test
-            //List<TankInfo> cwTanks = ti.GetClanWarsTanks();
+            //Test
+            List<TankInfo> cwTanks = tanks.ClanWarsTanks;
 
-            ////Validate
-            //int actualCount = cwTanks.Count;
-            //Assert.IsTrue( ( expectedCount == actualCount ), string.Format( "Count mismatch. Expected {0} but have {1} members.", expectedCount, actualCount ) );
+            //Validate
+            int actualCount = cwTanks.Count;
+            Assert.IsTrue( ( expectedCount == actualCount ), string.Format( "Count mismatch. Expected {0} but have {1} members.", expectedCount, actualCount ) );
 
-            //foreach( TankInfo t in cwTanks )
-            //{
-            //    Console.WriteLine( "ID: {0}, Country: {1}, Tier: {2}, Type: {3}, Name: {4}", t.TankID, t.Nation, t.Tier, t.TankType, t.Name );
-            //}
+            foreach( TankInfo t in cwTanks )
+            {
+                Console.WriteLine( "ID: {0}, Country: {1}, Tier: {2}, Type: {3}, Name: {4}", t.TankID, t.Nation, t.Tier, t.TankType, t.Name );
+            }
         }
     #endregion GetsClanWarsTanks
 

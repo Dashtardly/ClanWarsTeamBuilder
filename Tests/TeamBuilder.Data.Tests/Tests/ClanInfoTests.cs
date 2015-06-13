@@ -82,7 +82,7 @@ namespace TeamBuilder.Data.Tests
         public void LoadsJsonData()
         {
             //Setup
-            int expectedCount = 100;
+            int expectedCount = 100;    //Determined by content in the sample file.
 
             string cwd = System.Environment.CurrentDirectory;
             string dataFilePath = Path.Combine( cwd, SAMPLE_CLAN_DATA );

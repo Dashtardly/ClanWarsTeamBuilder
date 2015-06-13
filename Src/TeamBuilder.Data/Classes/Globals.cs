@@ -66,7 +66,7 @@ namespace WoT.Contributed.TeamBuilder.Data
         public const string QueryFieldsPlayersTanks = "tank_id";
 
         /// <summary>The list of fields to be found in the response to an API query to get information about the tanks in the game.</summary>
-        public const string QueryFieldsTanks = "name,short_name_i18n,level,tank_id,type,nation";
+        public const string QueryFieldsTanks = "name,short_name_i18n,level,tank_id,type,nation_i18n";
 
 
         //The field names returned from the Wargaming API call for information about a player's tanks.

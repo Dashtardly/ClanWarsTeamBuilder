@@ -63,7 +63,7 @@ namespace WoT.Contributed.TeamBuilder.Data
 #region Properties
 
         /// <summary>The unique account ID number for the player.</summary>
-        public int            AccountID     { get; private set; }
+        public int            AccountID     { get; set; }
 
         /// <summary>The list of tanks (game vehicles) that the <see cref="PlayerID"/> owns and has played a game in.</summary>
         public List<int>      TanksOwned    { get; private set; }
@@ -173,9 +173,8 @@ namespace WoT.Contributed.TeamBuilder.Data
         /// <returns>True if the data was loaded successfully. If false, check
         ///          the <see cref="TrappedError"/> property.</returns>
         ///====================================================================
-        public bool LoadTankPerformance( int accountID, string jsonData )
+        public bool LoadTankPerformance( string jsonData )
         {
-            AccountID = accountID;
             bool result = false;
             if( !string.IsNullOrEmpty( jsonData ) )
             {

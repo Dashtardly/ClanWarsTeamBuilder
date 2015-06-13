@@ -54,11 +54,21 @@ namespace TeamBuilder.Data.Tests
         /// <summary>Sample API call response for information about a (specific) clan.</summary>
         private const string SAMPLE_CLAN_DATA = "WG_ClanInfo.json";
 
+        /// <summary>Sample API call response for information about a (specific) clan.</summary>
+        private const string SAMPLE_TANK_DATA = "WG_TankInfo.json";
+
+
         /// <summary>Path to where the data file can be found so it can be deployed into the
         ///          directory being used for the unit test run.</summary>
         /// <remarks>In VS2010 the DeploymentItem file path was either aboslute or relative but
         ///          in VS2013 it is now relative to the build output directory.</remarks>
-        private const string SAMPLE_DATA_FILE_PATH = "../../Data/" + SAMPLE_CLAN_DATA;
+        private const string SAMPLE_CLAN_FILE_PATH = "../../Data/" + SAMPLE_CLAN_DATA;
+
+        /// <summary>Path to where the data file can be found so it can be deployed into the
+        ///          directory being used for the unit test run.</summary>
+        /// <remarks>In VS2010 the DeploymentItem file path was either aboslute or relative but
+        ///          in VS2013 it is now relative to the build output directory.</remarks>
+        private const string SAMPLE_TANK_FILE_PATH = "../../Data/" + SAMPLE_TANK_DATA;
 
 #endregion Data
 
@@ -66,11 +76,11 @@ namespace TeamBuilder.Data.Tests
 
     #region GetClanInfo
         [TestMethod]
-        [DeploymentItem( SAMPLE_DATA_FILE_PATH )]
+        [DeploymentItem( SAMPLE_CLAN_FILE_PATH )]
         public void GetClanInfo()
         {
             //Setup
-            int expectedCount = 100;
+            int expectedCount = 100;    //Determined by content in the sample file.
 
             string jsonData = TestHelpers.ReadFromFile( SAMPLE_CLAN_DATA );
 
@@ -119,16 +129,81 @@ namespace TeamBuilder.Data.Tests
             {
                 Console.WriteLine( ci.TrappedError.ToString() );
             }
-            Assert.IsTrue( result, "Failed to load the test data file content." );
+            Assert.IsTrue( result, "Failed to load the returned query data content." );
             int actualCount = ci.Members.Count;
             Console.WriteLine( "Query returned member count: " + actualCount );
             foreach( ClanMemberInfo cmi in ci.Members )
             {
                 Console.WriteLine( "{0} is {1} who is a {2}", cmi.AccountID, cmi.Name, cmi.Role );
-                Assert.IsNull( cmi.Tanks, "Tanks property has been set without a query." );
+                Assert.IsNull( cmi.Tanks, "Tanks property has been set without a query/load." );
             }     
         }
     #endregion GetClanInfoLive
+
+    #region GetTanksInfo
+        [TestMethod]
+        [DeploymentItem( SAMPLE_TANK_FILE_PATH )]
+        public void GetTanksInfo()
+        {
+            //Setup
+            int expectedCount = 396;    //Determined by content in the sample file.
+
+            string jsonData = TestHelpers.ReadFromFile( SAMPLE_TANK_DATA );
+
+            ApiWebClientFake wcFake = new ApiWebClientFake();
+            wcFake.QueryResponse = jsonData;
+
+            ApiQuery aq = new ApiQuery();
+            aq.WebClient = wcFake;
+
+            string tankData = aq.GetTanksInfo( APPLICATION_ID );
+
+            Tanks tanks = new Tanks();
+
+            //Test
+            bool result = tanks.Load( tankData );
+
+            //Validate
+            if( null != tanks.TrappedError )
+            {
+                Console.WriteLine( tanks.TrappedError.ToString() );
+            }
+            Assert.IsTrue( result, "Failed to load the test data file content." );
+            int actualCount = tanks.AllTanks.Count;
+            Assert.IsTrue( ( expectedCount == actualCount ), string.Format( "Count mismatch. Expected {0} but have {1} tanks.", expectedCount, actualCount ) );
+        }
+    #endregion GetTanksInfo
+
+    #region GetTanksInfoLive
+        [TestMethod]
+        public void GetTanksInfoLive()
+        {
+            //Setup
+            ApiQuery aq = new ApiQuery();
+            aq.WebClient = new ApiWebClient();
+
+            string tankData = aq.GetTanksInfo( APPLICATION_ID );
+
+            Tanks tanks = new Tanks();
+
+            //Test
+            bool result = tanks.Load( tankData );
+
+            //Validate
+            if( null != tanks.TrappedError )
+            {
+                Console.WriteLine( tanks.TrappedError.ToString() );
+            }
+            Assert.IsTrue( result, "Failed to load the returned query data content." );
+            int actualCount = tanks.AllTanks.Count;
+            Console.WriteLine( "Query returned tanks count: " + actualCount );
+            foreach( TankInfo ti in tanks.AllTanks )
+            {
+                Console.WriteLine( "{0} is \"{1}\" which is a {2} Tier {3} {4}", ti.TankID, ti.Name, ti.Nation, ti.Tier, ti.TankType );
+                Assert.IsNull( ti.Performance, "Performance property has been set without a query/load." );
+            }
+        }
+    #endregion GetTanksInfoLive
 
 #endregion Test Methods
 
